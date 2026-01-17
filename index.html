@@ -9,15 +9,19 @@
             color: white;
             font-family: sans-serif;
             display: flex;
+            flex-direction: column; /* Sorgt dafür, dass Text untereinander steht */
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            text-align: center;
         }
+        a { color: white; text-decoration: none; opacity: 0.8; }
+        a:hover { opacity: 1; }
     </style>
 </head>
 <body>
     <p>Contact me via email.</p>
-    <p>markus@sabath.ch.</p>
+    <p><a href="mailto:markus@sabath.ch">markus@sabath.ch</a></p>
 </body>
 </html>
