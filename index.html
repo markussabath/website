@@ -15,10 +15,6 @@
       --muted: rgba(255,255,255,0.62);
       --line: rgba(255,255,255,0.12);
       --shadow: 0 20px 60px rgba(0,0,0,0.45);
-
-      /* dynamic background pointer (defaults) */
-      --mx: 50%;
-      --my: 50%;
     }
 
     *{ box-sizing: border-box; }
@@ -28,14 +24,11 @@
       min-height:100vh;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       color: var(--text);
-
-      /* keep your base background exactly */
       background:
         radial-gradient(900px 500px at 20% 10%, rgba(120, 110, 255, 0.25), transparent 60%),
         radial-gradient(900px 500px at 80% 0%, rgba(0, 220, 255, 0.18), transparent 60%),
         radial-gradient(900px 500px at 70% 90%, rgba(255, 120, 200, 0.12), transparent 60%),
         var(--bg);
-
       display:flex;
       align-items:center;
       justify-content:center;
@@ -43,22 +36,23 @@
       overflow-x: hidden;
     }
 
-    /* dynamic background layer (reacts to cursor, still subtle, no effect on card) */
-    body::before{
+    
+    body::after{
       content:"";
       position: fixed;
       inset: 0;
       pointer-events: none;
-      z-index: 0;
-      opacity: 1;
-
-      /* this is the interaction: a soft "pressure field" that follows the dot */
       background:
-        radial-gradient(700px 700px at var(--mx) var(--my), rgba(255,255,255,0.045), transparent 72%),
-        radial-gradient(380px 380px at var(--mx) var(--my), rgba(255,255,255,0.035), transparent 70%);
+        radial-gradient(
+          600px 600px at var(--mx, 50%) var(--my, 50%),
+          rgba(255,255,255,0.05),
+          transparent 70%
+        );
+      transition: background 0.15s ease;
+      z-index: 0;
     }
 
-    /* cursor dot (background only) — upgraded, smoother & more premium */
+    
     #cursor-dot{
       position: fixed;
       left: 0;
@@ -67,28 +61,28 @@
       height: 8px;
       border-radius: 999px;
       pointer-events: none;
-
-      /* behind content/card */
-      z-index: 1;
-
+      z-index: 0;         
       opacity: 0;
       transform: translate3d(-9999px,-9999px,0);
-
-      /* "specular" dot: subtle highlight + clean ring */
-      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95), rgba(255,255,255,0.28) 55%, rgba(255,255,255,0.10) 100%);
-      box-shadow:
-        0 0 0 10px rgba(255,255,255,0.03),
-        0 0 28px rgba(255,255,255,0.10);
-
-      mix-blend-mode: screen;
-      transition: opacity 200ms ease;
       will-change: transform, opacity;
+      transition: opacity 160ms ease;
+
+    
+      background: radial-gradient(circle at 35% 35%,
+        rgba(160, 240, 255, 0.95),
+        rgba(120, 210, 255, 0.55) 45%,
+        rgba(110, 140, 255, 0.20) 100%
+      );
+
+      
+      box-shadow:
+        0 0 0 10px rgba(0, 220, 255, 0.035),
+        0 0 22px rgba(120, 110, 255, 0.09);
     }
 
-    /* hide dot + dynamics on touch devices */
+    
     @media (hover: none) and (pointer: coarse){
       #cursor-dot{ display:none; }
-      body::before{ display:none; }
     }
 
     .wrap{
@@ -96,9 +90,7 @@
       display:grid;
       gap:16px;
       position: relative;
-
-      /* ensure card/content are always above background effects */
-      z-index: 2;
+      z-index: 1;
     }
 
     .card{
@@ -108,12 +100,11 @@
       box-shadow: var(--shadow);
       overflow:hidden;
       position: relative;
-      z-index: 3;
+      z-index: 2;
     }
 
     .hero{
       padding: 28px 28px 22px;
-      position: relative;
     }
 
     .topline{
@@ -217,22 +208,27 @@
       border-top: 1px solid var(--line);
     }
 
-    footer a{ color: rgba(255,255,255,0.6); text-decoration:none; }
-    footer a:hover{ text-decoration:underline; }
+    footer a{
+      color: rgba(255,255,255,0.6);
+      text-decoration:none;
+    }
+
+    footer a:hover{
+      text-decoration:underline;
+    }
 
     @media (max-width: 760px){
       .grid{ grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce){
-      body::before{ display:none; }
-      #cursor-dot{ transition: none; }
+      #cursor-dot{ display:none; }
+      body::after{ display:none; }
     }
   </style>
 </head>
 
 <body>
-  <!-- background-only cursor dot -->
   <div id="cursor-dot" aria-hidden="true"></div>
 
   <main class="wrap">
@@ -271,40 +267,58 @@
   </main>
 
   <script>
-    // year
     document.getElementById("y").textContent = new Date().getFullYear();
 
-    // cursor dot (smooth follow) + dynamic background pointer
     const dot = document.getElementById("cursor-dot");
 
     let targetX = -9999, targetY = -9999;
     let x = targetX, y = targetY;
 
-    const speed = 0.14; // smoother / more premium
+    
+    const follow = 0.12;
+
+    let visible = false;
+
+    function show(){
+      if (!visible){
+        visible = true;
+        dot.style.opacity = "1";
+      }
+    }
+
+    function hide(){
+      visible = false;
+      dot.style.opacity = "0";
+    }
+
+    
+    function setGlowVars(cx, cy){
+      const mx = (cx / window.innerWidth) * 100;
+      const my = (cy / window.innerHeight) * 100;
+      document.documentElement.style.setProperty("--mx", `${mx}%`);
+      document.documentElement.style.setProperty("--my", `${my}%`);
+    }
 
     document.addEventListener("mousemove", (e) => {
       targetX = e.clientX;
       targetY = e.clientY;
-
-      // show dot
-      dot.style.opacity = "1";
-
-      // drive the background interaction (CSS vars)
-      const mx = (targetX / window.innerWidth) * 100;
-      const my = (targetY / window.innerHeight) * 100;
-      document.documentElement.style.setProperty("--mx", `${mx}%`);
-      document.documentElement.style.setProperty("--my", `${my}%`);
+      show();
+      setGlowVars(targetX, targetY);
     });
 
-    document.addEventListener("mouseleave", () => {
-      dot.style.opacity = "0";
+    
+    document.addEventListener("mouseout", (e) => {
+      if (!e.relatedTarget) hide();
     });
+
+    
+    window.addEventListener("blur", hide);
 
     function tick(){
-      x += (targetX - x) * speed;
-      y += (targetY - y) * speed;
+      x += (targetX - x) * follow;
+      y += (targetY - y) * follow;
 
-      // center the dot on the cursor (8px => offset 4px)
+      
       dot.style.transform = `translate3d(${x - 4}px, ${y - 4}px, 0)`;
 
       requestAnimationFrame(tick);
