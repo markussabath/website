@@ -33,64 +33,12 @@
       align-items:center;
       justify-content:center;
       padding: 28px;
-      overflow-x: hidden;
-    }
-
-    
-    body::after{
-      content:"";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(
-          600px 600px at var(--mx, 50%) var(--my, 50%),
-          rgba(255,255,255,0.05),
-          transparent 70%
-        );
-      transition: background 0.15s ease;
-      z-index: 0;
-    }
-
-    
-    #cursor-dot{
-      position: fixed;
-      left: 0;
-      top: 0;
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      pointer-events: none;
-      z-index: 0;         
-      opacity: 0;
-      transform: translate3d(-9999px,-9999px,0);
-      will-change: transform, opacity;
-      transition: opacity 160ms ease;
-
-    
-      background: radial-gradient(circle at 35% 35%,
-        rgba(160, 240, 255, 0.95),
-        rgba(120, 210, 255, 0.55) 45%,
-        rgba(110, 140, 255, 0.20) 100%
-      );
-
-      
-      box-shadow:
-        0 0 0 10px rgba(0, 220, 255, 0.035),
-        0 0 22px rgba(120, 110, 255, 0.09);
-    }
-
-    
-    @media (hover: none) and (pointer: coarse){
-      #cursor-dot{ display:none; }
     }
 
     .wrap{
       width: min(920px, 100%);
       display:grid;
       gap:16px;
-      position: relative;
-      z-index: 1;
     }
 
     .card{
@@ -99,8 +47,6 @@
       border-radius: 20px;
       box-shadow: var(--shadow);
       overflow:hidden;
-      position: relative;
-      z-index: 2;
     }
 
     .hero{
@@ -177,7 +123,7 @@
     }
 
     .mini{
-      padding: 16px 16px;
+      padding: 16px;
       border-radius: 16px;
       border: 1px solid var(--line);
       background: linear-gradient(180deg, var(--card2), rgba(255,255,255,0.03));
@@ -195,7 +141,6 @@
       font-size: 15px;
       line-height: 1.6;
       color: var(--text);
-      word-break: break-word;
     }
 
     footer{
@@ -204,7 +149,6 @@
       font-size: 12px;
       display:flex;
       justify-content:space-between;
-      gap:10px;
       border-top: 1px solid var(--line);
     }
 
@@ -220,17 +164,10 @@
     @media (max-width: 760px){
       .grid{ grid-template-columns: 1fr; }
     }
-
-    @media (prefers-reduced-motion: reduce){
-      #cursor-dot{ display:none; }
-      body::after{ display:none; }
-    }
   </style>
 </head>
 
 <body>
-  <div id="cursor-dot" aria-hidden="true"></div>
-
   <main class="wrap">
     <section class="card">
       <div class="hero">
@@ -268,62 +205,6 @@
 
   <script>
     document.getElementById("y").textContent = new Date().getFullYear();
-
-    const dot = document.getElementById("cursor-dot");
-
-    let targetX = -9999, targetY = -9999;
-    let x = targetX, y = targetY;
-
-    
-    const follow = 0.12;
-
-    let visible = false;
-
-    function show(){
-      if (!visible){
-        visible = true;
-        dot.style.opacity = "1";
-      }
-    }
-
-    function hide(){
-      visible = false;
-      dot.style.opacity = "0";
-    }
-
-    
-    function setGlowVars(cx, cy){
-      const mx = (cx / window.innerWidth) * 100;
-      const my = (cy / window.innerHeight) * 100;
-      document.documentElement.style.setProperty("--mx", `${mx}%`);
-      document.documentElement.style.setProperty("--my", `${my}%`);
-    }
-
-    document.addEventListener("mousemove", (e) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-      show();
-      setGlowVars(targetX, targetY);
-    });
-
-    
-    document.addEventListener("mouseout", (e) => {
-      if (!e.relatedTarget) hide();
-    });
-
-    
-    window.addEventListener("blur", hide);
-
-    function tick(){
-      x += (targetX - x) * follow;
-      y += (targetY - y) * follow;
-
-      
-      dot.style.transform = `translate3d(${x - 4}px, ${y - 4}px, 0)`;
-
-      requestAnimationFrame(tick);
-    }
-    tick();
   </script>
 </body>
 </html>
