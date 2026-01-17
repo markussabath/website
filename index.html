@@ -16,7 +16,9 @@
       --line: rgba(255,255,255,0.12);
       --shadow: 0 20px 60px rgba(0,0,0,0.45);
     }
+
     *{ box-sizing: border-box; }
+
     body{
       margin:0;
       min-height:100vh;
@@ -32,27 +34,43 @@
       justify-content:center;
       padding: 28px;
     }
+
+    /* subtle mouse glow */
+    body::after{
+      content:"";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(
+          600px 600px at var(--mx, 50%) var(--my, 50%),
+          rgba(255,255,255,0.05),
+          transparent 70%
+        );
+      transition: background 0.15s ease;
+      z-index: 0;
+    }
+
     .wrap{
       width: min(920px, 100%);
       display:grid;
       gap:16px;
+      position: relative;
+      z-index: 1;
     }
+
     .card{
       border: 1px solid var(--line);
-      background:
-  radial-gradient(800px 600px at 15% 10%, rgba(120, 110, 255, 0.25), transparent 60%),
-  radial-gradient(700px 500px at 85% 15%, rgba(0, 200, 255, 0.18), transparent 60%),
-  radial-gradient(900px 700px at 70% 85%, rgba(180, 120, 255, 0.18), transparent 60%),
-  #0b0f17;
-
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.03));
       border-radius: 20px;
       box-shadow: var(--shadow);
       overflow:hidden;
     }
+
     .hero{
       padding: 28px 28px 22px;
-      position: relative;
     }
+
     .topline{
       display:flex;
       align-items:center;
@@ -61,6 +79,7 @@
       padding-bottom: 14px;
       border-bottom: 1px solid var(--line);
     }
+
     .badge{
       font-size: 12px;
       color: var(--muted);
@@ -72,12 +91,14 @@
       user-select:none;
       white-space: nowrap;
     }
+
     h1{
       margin: 18px 0 6px;
       font-size: clamp(28px, 4vw, 44px);
       letter-spacing: -0.02em;
       line-height: 1.1;
     }
+
     p{
       margin: 0;
       color: var(--muted);
@@ -85,12 +106,14 @@
       line-height: 1.6;
       max-width: 62ch;
     }
+
     .actions{
       margin-top: 18px;
       display:flex;
       flex-wrap:wrap;
       gap:10px;
     }
+
     a.btn{
       text-decoration:none;
       color: var(--text);
@@ -103,23 +126,27 @@
       gap:10px;
       transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
     }
+
     a.btn:hover{
       transform: translateY(-1px);
       background: rgba(255,255,255,0.06);
       border-color: rgba(255,255,255,0.18);
     }
+
     .grid{
       display:grid;
       grid-template-columns: 1.2fr 0.8fr;
       gap: 14px;
       padding: 14px;
     }
+
     .mini{
       padding: 16px 16px;
       border-radius: 16px;
       border: 1px solid var(--line);
       background: linear-gradient(180deg, var(--card2), rgba(255,255,255,0.03));
     }
+
     .mini h2{
       margin:0 0 6px;
       font-size: 13px;
@@ -127,12 +154,14 @@
       text-transform: uppercase;
       color: var(--muted);
     }
+
     .mini .value{
       font-size: 15px;
       line-height: 1.6;
       color: var(--text);
       word-break: break-word;
     }
+
     footer{
       padding: 14px 18px 18px;
       color: rgba(255,255,255,0.45);
@@ -142,8 +171,15 @@
       gap:10px;
       border-top: 1px solid var(--line);
     }
-    footer a{ color: rgba(255,255,255,0.6); text-decoration:none; }
-    footer a:hover{ text-decoration:underline; }
+
+    footer a{
+      color: rgba(255,255,255,0.6);
+      text-decoration:none;
+    }
+
+    footer a:hover{
+      text-decoration:underline;
+    }
 
     @media (max-width: 760px){
       .grid{ grid-template-columns: 1fr; }
@@ -172,15 +208,11 @@
       <div class="grid">
         <div class="mini">
           <h2>REPLY TIME</h2>
-          <div class="value">
-            Usually within 24-48 hours.
-          </div>
+          <div class="value">Usually within 24–48 hours.</div>
         </div>
         <div class="mini">
           <h2>NOTE</h2>
-          <div class="value">
-            Simple page. No tracking.
-          </div>
+          <div class="value">Simple page. No tracking.</div>
         </div>
       </div>
 
@@ -193,6 +225,13 @@
 
   <script>
     document.getElementById("y").textContent = new Date().getFullYear();
+
+    document.addEventListener("mousemove", (e) => {
+      const x = (e.clientX / window.innerWidth) * 100;
+      const y = (e.clientY / window.innerHeight) * 100;
+      document.documentElement.style.setProperty("--mx", `${x}%`);
+      document.documentElement.style.setProperty("--my", `${y}%`);
+    });
   </script>
 </body>
 </html>
