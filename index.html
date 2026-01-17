@@ -35,7 +35,7 @@
       padding: 28px;
     }
 
-    /* subtle mouse glow */
+    /* mouse glow – background only */
     body::after{
       content:"";
       position: fixed;
@@ -43,11 +43,11 @@
       pointer-events: none;
       background:
         radial-gradient(
-          600px 600px at var(--mx, 50%) var(--my, 50%),
-          rgba(255,255,255,0.05),
-          transparent 70%
+          700px 700px at var(--mx, 50%) var(--my, 50%),
+          rgba(255,255,255,0.035),
+          transparent 72%
         );
-      transition: background 0.15s ease;
+      transition: background 0.2s ease;
       z-index: 0;
     }
 
@@ -56,15 +56,26 @@
       display:grid;
       gap:16px;
       position: relative;
-      z-index: 1;
+      z-index: 2;
     }
 
     .card{
+      position: relative;
+      z-index: 3;
       border: 1px solid var(--line);
       background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.03));
       border-radius: 20px;
       box-shadow: var(--shadow);
       overflow:hidden;
+    }
+
+    /* mask glow behind card */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-60px;
+      background: var(--bg);
+      z-index:-1;
     }
 
     .hero{
@@ -141,7 +152,7 @@
     }
 
     .mini{
-      padding: 16px 16px;
+      padding: 16px;
       border-radius: 16px;
       border: 1px solid var(--line);
       background: linear-gradient(180deg, var(--card2), rgba(255,255,255,0.03));
@@ -159,7 +170,6 @@
       font-size: 15px;
       line-height: 1.6;
       color: var(--text);
-      word-break: break-word;
     }
 
     footer{
@@ -168,7 +178,6 @@
       font-size: 12px;
       display:flex;
       justify-content:space-between;
-      gap:10px;
       border-top: 1px solid var(--line);
     }
 
